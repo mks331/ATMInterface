@@ -34,9 +34,24 @@ class ATM {
     private BankAccount account;
     private Scanner scanner;
 
+    // Add user ID and PIN
+    private final String correctUserId = "123456";
+    private final String correctPin = "7890";
+
     public ATM(BankAccount account) {
         this.account = account;
         scanner = new Scanner(System.in);
+    }
+
+    // Add user authentication method
+    private boolean authenticateUser() {
+        System.out.print("Enter User ID: ");
+        String userId = scanner.next();
+        System.out.print("Enter PIN: ");
+        String pin = scanner.next();
+
+        // Check if the entered user ID and PIN are correct
+        return userId.equals(correctUserId) && pin.equals(correctPin);
     }
 
     public void showMenu() {
@@ -49,28 +64,33 @@ class ATM {
     }
 
     public void start() {
-        int choice;
-        do {
-            showMenu();
-            System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    checkBalance();
-                    break;
-                case 2:
-                    deposit();
-                    break;
-                case 3:
-                    withdraw();
-                    break;
-                case 4:
-                    System.out.println("Exiting ATM. Thank You!");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please select a valid option!");
-            }
-        } while (choice != 4);
+        // Prompt for authentication before granting access
+        if (authenticateUser()) {
+            int choice;
+            do {
+                showMenu();
+                System.out.print("Enter your choice: ");
+                choice = scanner.nextInt();
+                switch (choice) {
+                    case 1:
+                        checkBalance();
+                        break;
+                    case 2:
+                        deposit();
+                        break;
+                    case 3:
+                        withdraw();
+                        break;
+                    case 4:
+                        System.out.println("Exiting ATM. Thank You!");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please select a valid option!");
+                }
+            } while (choice != 4);
+        } else {
+            System.out.println("Authentication failed. Exiting ATM.");
+        }
     }
 
     private void checkBalance() {
@@ -92,6 +112,11 @@ class ATM {
     public void close() {
         scanner.close();
     }
-}
 
-   
+    public static void main(String[] args) {
+        BankAccount userAccount = new BankAccount(1000.0);
+        ATM atm = new ATM(userAccount);
+        atm.start();
+        atm.close();
+    }
+}
